@@ -1,0 +1,27 @@
+{
+  "name": "bot-it-discord",
+  "version": "1.0.0",
+  "description": "Bot Discord com sistema de suporte, tickets e PIX",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "suporte",
+    "tickets",
+    "pix"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
