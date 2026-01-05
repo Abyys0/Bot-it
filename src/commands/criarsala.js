@@ -4,7 +4,7 @@ const path = require('path');
 
 const salasPath = path.join(__dirname, '../../config/salas.json');
 
-const VALORES = ['0.50', '1.00', '2.00', '5.00', '10.00', '20.00', '50.00', '100.00'];
+const VALORES = ['100.00', '50.00', '20.00', '10.00', '5.00', '2.00', '1.00', '0.50'];
 const MODOS = {
     '1x1': { nome: '1x1', jogadores: 2, icone: '⚔️' },
     '2x2': { nome: '2x2', jogadores: 4, icone: '🎮' },
