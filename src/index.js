@@ -61,20 +61,28 @@ for (const file of eventFiles) {
     console.log(`✅ Evento carregado: ${event.name}`);
 }
 
-// Registrar comandos slash (GLOBAL - funciona em todos os servidores)
+// Registrar comandos slash
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
     try {
-        console.log('🔄 Registrando comandos slash globalmente...');
+        console.log('🔄 Registrando comandos slash...');
         
-        // Registrar comandos GLOBAIS (funciona em qualquer servidor)
-        await rest.put(
-            Routes.applicationCommands(process.env.CLIENT_ID),
-            { body: commands }
-        );
-        
-        console.log('✅ Comandos slash registrados globalmente!');
+        if (process.env.GUILD_ID) {
+            // Registrar comandos no SERVIDOR ESPECÍFICO (instantâneo)
+            await rest.put(
+                Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+                { body: commands }
+            );
+            console.log('✅ Comandos slash registrados no servidor! (Disponível imediatamente)');
+        } else {
+            // Registrar comandos GLOBAIS (demora até 1 hora para propagar)
+            await rest.put(
+                Routes.applicationCommands(process.env.CLIENT_ID),
+                { body: commands }
+            );
+            console.log('✅ Comandos slash registrados globalmente! (Pode levar até 1 hora para aparecer)');
+        }
     } catch (error) {
         console.error('❌ Erro ao registrar comandos:', error);
     }
