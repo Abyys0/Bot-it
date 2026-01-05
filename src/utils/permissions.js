@@ -54,7 +54,11 @@ function hasSuportRole(member) {
         return member.permissions.has('Administrator');
     }
     
-    return member.roles.cache.has(supportRoleId);
+    // Suporta múltiplos cargos separados por vírgula
+    const supportRoleIds = supportRoleId.split(',').map(id => id.trim());
+    
+    // Verifica se o membro tem pelo menos um dos cargos
+    return supportRoleIds.some(roleId => member.roles.cache.has(roleId));
 }
 
 module.exports = {
