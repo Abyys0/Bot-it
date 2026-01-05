@@ -6,30 +6,30 @@
 
 **Admin usa o comando:**
 ```
-/criarsala modo:1x1 canal:#1x1-mobile cargo_suporte:@Suporte
+/criarsala modo:1x1 tipo:Tático canal:#1x1-tatico cargo_suporte:@Suporte
 ```
 
 **Resultado:**
 ```
-✅ Painéis de 1x1 criados com sucesso em #1x1-mobile!
+✅ Painéis de 1x1 Tático criados com sucesso em #1x1-tatico!
 📊 Total de painéis criados: 8
 🛡️ Cargo de suporte: @Suporte
-📁 Categoria: 🎮 1X1
+📁 Partidas serão criadas na categoria atual
 ```
 
 ---
 
-### 2️⃣ Painel de Fila (Exemplo: 1x1 - R$ 5,00)
+### 2️⃣ Painel de Fila 1x1 (Exemplo: R$ 5,00)
 
 ```
 ╔═══════════════════════════════════════╗
-║  ⚔️ 1X1 - R$ 5.00                    ║
+║  ⚔️ 1X1 TÁTICO - R$ 5.00            ║
 ╚═══════════════════════════════════════╝
 
 **╔═══════ INFORMAÇÕES ═══════╗**
 
 **💰 Valor:** R$ 5.00
-**🎮 Modo:** 1x1
+**🎮 Modo:** 1x1 Tático
 **👥 Jogadores:** 0/2
 
 **╠═══════ FILA ═══════╣**
@@ -37,41 +37,90 @@
 
 **╚═══════════════════════╝**
 
-⚠️ *Escolha suas opções e entre na fila!*
+⚠️ *Escolha o tipo de gelo e entre na fila!*
 
 [Dropdown: 🧊 Escolha o tipo de gelo]
   ❄️ Gelo Normal
   ♾️ Gelo Infinito
-
-[Dropdown: 🔫 Escolha sua arma]
-  🔫 Full XM8
-  🔫 UMP
 
 [✅ ENTRAR NA FILA] [❌ SAIR DA FILA]
 ```
 
 ---
 
-### 3️⃣ Painel com Jogadores na Fila
+### 2️⃣-B Painel de Fila 2x2 (Exemplo: R$ 10,00)
 
 ```
 ╔═══════════════════════════════════════╗
-║  ⚔️ 1X1 - R$ 5.00                    ║
+║  🎮 2X2 MOBILE - R$ 10.00            ║
+╚═══════════════════════════════════════╝
+
+**╔═══════ INFORMAÇÕES ═══════╗**
+
+**💰 Valor:** R$ 10.00
+**🎮 Modo:** 2x2 Mobile
+**👥 Jogadores:** 0/2
+
+**╠═══════ FILA ═══════╣**
+*Nenhum jogador na fila*
+
+**╚═══════════════════════╝**
+
+⚠️ *Escolha sua arma e entre na fila!*
+
+[⚪ NORMAL] [🔫 FULL XM8 & UMP] [❌ SAIR DA FILA]
+```
+
+---
+
+### 3️⃣ Painel com Jogadores na Fila (1x1)
+
+```
+╔═══════════════════════════════════════╗
+║  ⚔️ 1X1 TÁTICO - R$ 5.00            ║
 ╚═══════════════════════════════════════╝
 
 **╔═══════ INFORMAÇÕES ═══════╗**
 
 **💰 Valor:** R$ 5.00
-**🎮 Modo:** 1x1
-**👥 Jogadores:** 2/2  ✅ COMPLETO
+**🎮 Modo:** 1x1 Tático
+**👥 Jogadores:** 2/2
 
 **╠═══════ FILA ═══════╣**
 
 **1.** @Jogador1
-   └ 🔫 Full XM8 • 🧊 Gelo Infinito
+   └ 🧊 Gelo Infinito
 
 **2.** @Jogador2
-   └ 🔫 UMP • 🧊 Gelo Normal
+   └ 🧊 Gelo Normal
+
+**╚═══════════════════════╝**
+
+🎮 *Iniciando partida...*
+```
+
+---
+
+### 3️⃣-B Painel com Jogadores na Fila (2x2)
+
+```
+╔═══════════════════════════════════════╗
+║  🎮 2X2 MOBILE - R$ 10.00            ║
+╚═══════════════════════════════════════╝
+
+**╔═══════ INFORMAÇÕES ═══════╗**
+
+**💰 Valor:** R$ 10.00
+**🎮 Modo:** 2x2 Mobile
+**👥 Jogadores:** 2/2
+
+**╠═══════ FILA ═══════╣**
+
+**1.** @Jogador1
+   └ 🔫 Full XM8 & UMP
+
+**2.** @Jogador2
+   └ ⚪ Normal
 
 **╚═══════════════════════╝**
 

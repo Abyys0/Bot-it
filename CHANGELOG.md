@@ -4,6 +4,29 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ---
 
+## [2.1.0] - 2026-01-05
+
+### ✨ Adicionado
+
+#### Seleção de Tipo de Sala
+- **Novo parâmetro `tipo` no comando `/criarsala`**
+  - Opções: Mobile, Emulador, Misto, Tático
+  - Tipo aparece no título dos painéis (ex: "1x1 Tático")
+  - Tipo exibido nas informações da partida
+  - Nome do canal privado inclui o tipo escolhido
+
+#### Melhorias nos Painéis
+- Painéis agora mostram o tipo da sala claramente
+- Modo 1x1: Apenas seleção de gelo (Normal/Infinito)
+- Modos 2x2/3x3/4x4: Botões Normal e Full XM8 & UMP
+
+### 📝 Atualizado
+- Documentação atualizada com novos tipos de sala
+- Exemplos visuais incluem os novos tipos
+- Guia rápido atualizado com instruções do tipo
+
+---
+
 ## [2.0.0] - 2026-01-05
 
 ### ✨ Adicionado
@@ -11,19 +34,19 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 #### Sistema Completo de Salas de Jogo
 - **Comando `/criarsala`**: Cria painéis de salas de jogo para diferentes modos
   - Suporte para modos: 1x1, 2x2, 3x3, 4x4
-  - 8 valores pré-configurados (R$ 0,50 até R$ 100,00)
-  - Criação automática de categorias por modo
+  - 8 valores pré-configurados (R$ 100,00 até R$ 0,50)
+  - Canais criados na categoria atual
   
 - **Sistema de Filas Inteligente**
-  - Filas independentes por modo e valor
-  - Contadores em tempo real
+  - Filas independentes por modo, tipo e valor
+  - Fechamento automático em 2 jogadores
   - Atualização automática dos painéis
   - Validações de jogador único por fila/partida
   
 - **Painéis Interativos de Fila**
   - Modo 1x1: Seleção de tipo de gelo (Normal/Infinito)
-  - Todos os modos: Seleção de arma (Full XM8/UMP)
-  - Botões de entrar/sair da fila
+  - Outros modos: Botões Normal e Full XM8 & UMP
+  - Botão de sair da fila
   - Exibição de jogadores na fila com suas opções
   
 - **Sistema de Partidas**
@@ -44,6 +67,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
   - `src/utils/queueManager.js` - Gerenciamento de filas
   - `src/utils/matchManager.js` - Gerenciamento de partidas
   - `src/utils/panelTemplates.js` - Templates de embeds
+  - `src/utils/playerSelections.js` - Gerenciamento de seleções temporárias
   - `config/salas.json` - Armazenamento de dados
   
 - **Documentação Completa**

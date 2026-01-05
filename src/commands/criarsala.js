@@ -39,6 +39,16 @@ module.exports = {
                     { name: '🏆 3x3', value: '3x3' },
                     { name: '👥 4x4', value: '4x4' }
                 ))
+        .addStringOption(option =>
+            option.setName('tipo')
+                .setDescription('Tipo da sala (Mobile, Emulador, Misto, Tático)')
+                .setRequired(true)
+                .addChoices(
+                    { name: '📱 Mobile', value: 'Mobile' },
+                    { name: '💻 Emulador', value: 'Emulador' },
+                    { name: '🔀 Misto', value: 'Misto' },
+                    { name: '🎯 Tático', value: 'Tático' }
+                ))
         .addChannelOption(option =>
             option.setName('canal')
                 .setDescription('Canal onde os painéis serão enviados')
@@ -51,6 +61,7 @@ module.exports = {
     
     async execute(interaction) {
         const modo = interaction.options.getString('modo');
+        const tipo = interaction.options.getString('tipo');
         const canal = interaction.options.getChannel('canal');
         const cargoSuporte = interaction.options.getRole('cargo_suporte');
         
@@ -74,7 +85,7 @@ module.exports = {
             
             // Enviar painéis para cada valor
             for (const valor of VALORES) {
-                const { embed, components } = createQueuePanel(modo, valor, modoInfo);
+                const { embed, components } = createQueuePanel(modo, tipo, valor, modoInfo);
                 
                 const message = await canal.send({
                     embeds: [embed],
@@ -82,9 +93,10 @@ module.exports = {
                 });
                 
                 // Salvar informações do painel
-                const painelId = `${modo}_${valor.replace('.', '')}`;
+                const painelId = `${modo}_${tipo}_${valor.replace('.', '')}`;
                 salas.paineis[painelId] = {
                     modo: modo,
+                    tipo: tipo,
                     valor: valor,
                     messageId: message.id,
                     channelId: canal.id,
@@ -107,7 +119,7 @@ module.exports = {
                 : `⚠️ Canal sem categoria - partidas serão criadas sem categoria`;
             
             await interaction.editReply({
-                content: `✅ Painéis de **${modoInfo.nome}** criados com sucesso em ${canal}!\n` +
+                content: `✅ Painéis de **${modoInfo.nome} ${tipo}** criados com sucesso em ${canal}!\n` +
                         `📊 Total de painéis criados: ${VALORES.length}\n` +
                         `🛡️ Cargo de suporte: ${cargoSuporte}\n` +
                         `${categoriaInfo}`

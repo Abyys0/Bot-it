@@ -12,40 +12,38 @@ Cria painéis de salas de jogo em um canal específico.
 
 **Parâmetros:**
 - `modo`: Tipo de sala (1x1, 2x2, 3x3, 4x4)
+- `tipo`: Tipo da sala (Mobile, Emulador, Misto, Tático)
 - `canal`: Canal onde os painéis serão enviados
 - `cargo_suporte`: Cargo com permissões de suporte
 
 **Comportamento:**
-- Cria uma categoria automaticamente para o modo escolhido
-- Envia painéis separados para cada valor (R$ 0,50 até R$ 100,00)
+- Usa a categoria atual do canal para criar partidas
+- Envia painéis separados para cada valor (R$ 100,00 até R$ 0,50)
 - Cada painel possui opções específicas do modo
+- O tipo escolhido aparece no título do painel (ex: "1x1 Tático")
 
 ### 2️⃣ Painéis de Fila
 
-#### Modo 1x1 (Opções especiais)
-- 🧊 **Tipo de Gelo:** Gelo Normal ou Gelo Infinito
-- 🔫 **Arma:** Full XM8 ou UMP
-- ✅ **Entrar na Fila**
+#### Modo 1x1
+- 🧊 **Tipo de Gelo:** Menu dropdown para escolher Gelo Normal ou Gelo Infinito
+- ✅ **Entrar na Fila** (após selecionar o gelo)
 - ❌ **Sair da Fila**
 
 #### Outros Modos (2x2, 3x3, 4x4)
-- 🔫 **Arma:** Full XM8 ou UMP
-- ✅ **Entrar na Fila**
+- ⚪ **Normal:** Entra na fila com modo normal
+- 🔫 **Full XM8 & UMP:** Entra na fila com armas completas
 - ❌ **Sair da Fila**
 
 ### 3️⃣ Sistema de Filas
 
 **Como funciona:**
-1. Jogador seleciona suas opções (gelo e/ou arma)
-2. Clica em "Entrar na Fila"
-3. Painel atualiza mostrando jogadores na fila
-4. Quando a fila completa (2 jogadores mínimo), a partida inicia automaticamente
+1. Jogador seleciona suas opções (gelo para 1x1, ou escolhe Normal/Armas para outros modos)
+2. Clica no botão correspondente para entrar na fila
+3. Painel atualiza mostrando jogadores na fila com suas escolhas
+4. Quando atingir 2 jogadores, a partida inicia automaticamente
 
 **Requisitos para fechamento:**
-- 1x1: 2 jogadores
-- 2x2: 4 jogadores
-- 3x3: 6 jogadores
-- 4x4: 8 jogadores
+- Todos os modos: 2 jogadores (mínimo)
 
 ### 4️⃣ Canal Privado da Partida
 

@@ -7,19 +7,20 @@
 Use o comando `/criarsala` com os seguintes parâmetros:
 
 ```
-/criarsala modo:1x1 canal:#1x1-mobile cargo_suporte:@Suporte
+/criarsala modo:1x1 tipo:Tático canal:#1x1-tatico cargo_suporte:@Suporte
 ```
 
 **Parâmetros:**
 - `modo`: Escolha entre 1x1, 2x2, 3x3 ou 4x4
+- `tipo`: Escolha entre Mobile, Emulador, Misto ou Tático
 - `canal`: Selecione o canal onde os painéis serão enviados
 - `cargo_suporte`: Cargo que poderá gerenciar as partidas
 
 **O que acontece:**
-✅ Cria uma categoria automaticamente (ex: "🎮 1X1")
-✅ Move o canal para dentro da categoria
-✅ Envia 8 painéis (um para cada valor: R$0,50 até R$100,00)
+✅ Usa a categoria atual do canal para criar partidas
+✅ Envia 8 painéis (um para cada valor: R$100,00 até R$0,50)
 ✅ Configura o sistema de filas automaticamente
+✅ O título dos painéis incluirá o tipo escolhido (ex: "1x1 Tático")
 
 ---
 
@@ -29,20 +30,20 @@ Use o comando `/criarsala` com os seguintes parâmetros:
 
 1. **Escolha o valor** que deseja apostar (role pelos painéis)
 
-2. **Selecione suas opções:**
-   - 🧊 **Tipo de Gelo** (apenas em salas 1x1)
+2. **Para salas 1x1:**
+   - 🧊 **Selecione o tipo de gelo** no menu dropdown
      - Gelo Normal ❄️
      - Gelo Infinito ♾️
-   - 🔫 **Arma**
-     - Full XM8
-     - UMP
+   - ✅ **Clique em "ENTRAR NA FILA"**
 
-3. **Clique em "✅ ENTRAR NA FILA"**
-   - Você verá seu nome aparecer no painel
-   - O painel mostra quantos jogadores faltam
+3. **Para salas 2x2, 3x3 ou 4x4:**
+   - ⚪ **Clique em "Normal"** para modo normal
+   - 🔫 **Clique em "Full XM8 & UMP"** para modo com armas completas
 
 4. **Aguarde outros jogadores**
-   - Quando a fila completar, a partida inicia automaticamente!
+   - Você verá seu nome aparecer no painel
+   - O painel mostra sua escolha (gelo ou arma)
+   - Quando atingir 2 jogadores, a partida inicia automaticamente!
 
 ### Saindo da Fila
 

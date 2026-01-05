@@ -24,7 +24,7 @@ async function criarCanalPartida(guild, painelId, jogadores) {
     }
     
     // Criar nome do canal
-    const nomeCanal = `${modoInfo.icone}${painel.modo}-r$${painel.valor}`;
+    const nomeCanal = `${modoInfo.icone}${painel.modo}-${painel.tipo.toLowerCase()}-r$${painel.valor}`;
     
     // Criar permissões do canal
     const permissionOverwrites = [
@@ -71,6 +71,7 @@ async function criarCanalPartida(guild, painelId, jogadores) {
         painelId: painelId,
         canalId: canal.id,
         modo: painel.modo,
+        tipo: painel.tipo,
         valor: painel.valor,
         jogadores: jogadores.map(j => ({
             userId: j.userId,
@@ -101,11 +102,11 @@ async function enviarPainelPartida(canal, partidaId) {
     // Criar embed com informações da partida
     const embed = new EmbedBuilder()
         .setColor(0x00FF00)
-        .setTitle(`${modoInfo.icone} Partida ${partida.modo.toUpperCase()} - R$ ${partida.valor}`)
+        .setTitle(`${modoInfo.icone} Partida ${partida.modo.toUpperCase()} ${partida.tipo} - R$ ${partida.valor}`)
         .setDescription(
             '**╔═══════ INFORMAÇÕES DA PARTIDA ═══════╗**\n\n' +
             `**💰 Valor da Aposta:** R$ ${partida.valor}\n` +
-            `**🎮 Modo:** ${partida.modo}\n` +
+            `**🎮 Modo:** ${partida.modo} ${partida.tipo}\n` +
             `**👥 Jogadores:** ${partida.jogadores.length}/${modoInfo.jogadores}\n\n` +
             '**╠═══════ JOGADORES ═══════╣**\n' +
             partida.jogadores.map((j, i) => {
@@ -115,7 +116,7 @@ async function enviarPainelPartida(canal, partidaId) {
                 if (partida.modo === '1x1') {
                     opcoesTexto = `\n   └ 🧊 ${opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
                 } else {
-                    opcoesTexto = `\n   └ 🔫 Full XM8 & UMP`;
+                    opcoesTexto = opcoes.arma === 'Normal' ? `\n   └ ⚪ Normal` : `\n   └ 🔫 ${opcoes.arma}`;
                 }
                 
                 return `**${i + 1}.** <@${j.userId}> ${j.pronto ? '✅' : '⏳'}${opcoesTexto}`;
@@ -184,11 +185,11 @@ async function atualizarPainelPartida(client, partidaId) {
     
     const embed = new EmbedBuilder()
         .setColor(partida.status === 'em_andamento' ? 0xFFFF00 : partida.status === 'finalizada' ? 0x0000FF : 0x00FF00)
-        .setTitle(`${modoInfo.icone} Partida ${partida.modo.toUpperCase()} - R$ ${partida.valor}`)
+        .setTitle(`${modoInfo.icone} Partida ${partida.modo.toUpperCase()} ${partida.tipo} - R$ ${partida.valor}`)
         .setDescription(
             '**╔═══════ INFORMAÇÕES DA PARTIDA ═══════╗**\n\n' +
             `**💰 Valor da Aposta:** R$ ${partida.valor}\n` +
-            `**🎮 Modo:** ${partida.modo}\n` +
+            `**🎮 Modo:** ${partida.modo} ${partida.tipo}\n` +
             `**👥 Jogadores:** ${partida.jogadores.length}/${modoInfo.jogadores}\n\n` +
             '**╠═══════ JOGADORES ═══════╣**\n' +
             partida.jogadores.map((j, i) => {
@@ -198,7 +199,7 @@ async function atualizarPainelPartida(client, partidaId) {
                 if (partida.modo === '1x1') {
                     opcoesTexto = `\n   └ 🧊 ${opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
                 } else {
-                    opcoesTexto = `\n   └ 🔫 Full XM8 & UMP`;
+                    opcoesTexto = opcoes.arma === 'Normal' ? `\n   └ ⚪ Normal` : `\n   └ 🔫 ${opcoes.arma}`;
                 }
                 
                 const vencedor = partida.vencedorId === j.userId ? ' 🏆' : '';

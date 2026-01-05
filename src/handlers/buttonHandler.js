@@ -46,6 +46,12 @@ module.exports = {
             return;
         }
         
+        // Entrar na fila Normal (outros modos)
+        if (customId.startsWith('entrar_normal_')) {
+            await handleEntrarFilaNormal(interaction);
+            return;
+        }
+        
         // Sair da fila
         if (customId.startsWith('sair_fila_')) {
             await handleSairFila(interaction);
@@ -611,6 +617,21 @@ async function handleEntrarFilaXM8(interaction) {
 }
 
 /**
+ * Handler para entrar na fila Normal (outros modos)
+ */
+async function handleEntrarFilaNormal(interaction) {
+    const painelId = interaction.customId.replace('entrar_normal_', '');
+    const userId = interaction.user.id;
+    
+    // Para modo normal
+    const opcoes = {
+        arma: 'Normal'
+    };
+    
+    await processarEntradaFila(interaction, painelId, userId, opcoes);
+}
+
+/**
  * Processa a entrada de um jogador na fila
  */
 async function processarEntradaFila(interaction, painelId, userId, opcoes) {
@@ -627,7 +648,7 @@ async function processarEntradaFila(interaction, painelId, userId, opcoes) {
     const salas = queueManager.loadSalas();
     const painel = salas.paineis[painelId];
     const modoInfo = MODOS[painel.modo];
-    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.valor, resultado.fila, modoInfo);
+    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.tipo, painel.valor, resultado.fila, modoInfo);
     
     await interaction.message.edit({ embeds: [embedAtualizado] });
     
@@ -654,7 +675,7 @@ async function processarEntradaFila(interaction, painelId, userId, opcoes) {
             });
             
             // Resetar embed da fila
-            const embedReset = atualizarEmbedFila(painel.modo, painel.valor, [], modoInfo);
+            const embedReset = atualizarEmbedFila(painel.modo, painel.tipo, painel.valor, [], modoInfo);
             await interaction.message.edit({ embeds: [embedReset] });
             
             // Notificar no canal original
@@ -696,7 +717,7 @@ async function handleSairFila(interaction) {
     const salas = queueManager.loadSalas();
     const painel = salas.paineis[painelId];
     const modoInfo = MODOS[painel.modo];
-    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.valor, resultado.fila, modoInfo);
+    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.tipo, painel.valor, resultado.fila, modoInfo);
     
     await interaction.message.edit({ embeds: [embedAtualizado] });
     

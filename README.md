@@ -11,11 +11,14 @@ Bot para Discord com sistema completo de suporte, tickets, pagamentos via PIX e 
   - Fechamento de ticket com deleção automática
 
 - **🎮 Sistema de Salas de Jogo** ⭐ NOVO
-  - Criação automática de painéis de fila por modo e valor
+  - Criação automática de painéis de fila por modo, tipo e valor
   - Suporte para modos: 1x1, 2x2, 3x3, 4x4
-  - Valores de R$ 0,50 até R$ 100,00
-  - Opções personalizadas (Gelo Infinito/Normal para 1x1, armas)
-  - Filas automáticas com contadores em tempo real
+  - Suporte para tipos: Mobile, Emulador, Misto, Tático
+  - Valores de R$ 100,00 até R$ 0,50
+  - Opções personalizadas por modo:
+    - 1x1: Seleção de Gelo (Normal/Infinito)
+    - 2x2/3x3/4x4: Modo Normal ou Full XM8 & UMP
+  - Filas automáticas com fechamento em 2 jogadores
   - Criação de canais privados para partidas
   - Sistema de confirmação "Pronto" para jogadores
   - Painéis de gerenciamento para suporte (pagamento, vencedor, cancelar)

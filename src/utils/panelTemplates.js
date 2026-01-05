@@ -10,14 +10,14 @@ const MODOS = {
 /**
  * Cria o painel de fila para um modo e valor específico
  */
-function createQueuePanel(modo, valor, modoInfo) {
+function createQueuePanel(modo, tipo, valor, modoInfo) {
     const embed = new EmbedBuilder()
         .setColor(0x5865F2)
-        .setTitle(`${modoInfo.icone} ${modoInfo.nome.toUpperCase()} - R$ ${valor}`)
+        .setTitle(`${modoInfo.icone} ${modoInfo.nome.toUpperCase()} ${tipo} - R$ ${valor}`)
         .setDescription(
             `**╔═══════ INFORMAÇÕES ═══════╗**\n\n` +
             `**💰 Valor:** R$ ${valor}\n` +
-            `**🎮 Modo:** ${modoInfo.nome}\n` +
+            `**🎮 Modo:** ${modoInfo.nome} ${tipo}\n` +
             `**👥 Jogadores:** 0/${modoInfo.jogadores}\n\n` +
             `**╠═══════ FILA ═══════╣**\n` +
             `*Nenhum jogador na fila*\n\n` +
@@ -29,7 +29,7 @@ function createQueuePanel(modo, valor, modoInfo) {
         .setTimestamp();
     
     const components = [];
-    const painelId = `${modo}_${valor.replace('.', '')}`;
+    const painelId = `${modo}_${tipo}_${valor.replace('.', '')}`;
     
     // Para modo 1x1, apenas seleção de gelo
     if (modo === '1x1') {
@@ -69,19 +69,29 @@ function createQueuePanel(modo, valor, modoInfo) {
             );
         components.push(rowBotoes);
     } else {
-        // Para outros modos (2x2, 3x3, 4x4): Botões diretos com arma
+        // Para outros modos (2x2, 3x3, 4x4): Botões com opções de arma
         const rowBotoesArma = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
+                    .setCustomId(`entrar_normal_${painelId}`)
+                    .setLabel('⚪ NORMAL')
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
                     .setCustomId(`entrar_xm8_${painelId}`)
                     .setLabel('🔫 FULL XM8 & UMP')
-                    .setStyle(ButtonStyle.Success),
+                    .setStyle(ButtonStyle.Success)
+            );
+        
+        const rowSair = new ActionRowBuilder()
+            .addComponents(
                 new ButtonBuilder()
                     .setCustomId(`sair_fila_${painelId}`)
                     .setLabel('❌ SAIR DA FILA')
                     .setStyle(ButtonStyle.Danger)
             );
+        
         components.push(rowBotoesArma);
+        components.push(rowSair);
     }
     
     return { embed, components };
@@ -90,14 +100,15 @@ function createQueuePanel(modo, valor, modoInfo) {
 /**
  * Atualiza o embed da fila com os jogadores atuais
  */
-function atualizarEmbedFila(modo, valor, jogadores, modoInfo) {
+function atualizarEmbedFila(modo, tipo, valor, jogadores, modoInfo) {
     const filaTexto = jogadores.length > 0 
         ? jogadores.map((j, i) => {
             let opcoes = '';
             if (modo === '1x1') {
                 opcoes = `🧊 ${j.opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
             } else {
-                opcoes = `🔫 Full XM8 & UMP`;
+                // Para outros modos, mostrar a arma escolhida
+                opcoes = j.opcoes.arma === 'Normal' ? `⚪ Normal` : `🔫 ${j.opcoes.arma}`;
             }
             return `**${i + 1}.** <@${j.userId}>\n   └ ${opcoes}`;
         }).join('\n\n')
@@ -105,11 +116,11 @@ function atualizarEmbedFila(modo, valor, jogadores, modoInfo) {
     
     const embed = new EmbedBuilder()
         .setColor(jogadores.length >= modoInfo.jogadores ? 0x00FF00 : 0x5865F2)
-        .setTitle(`${modoInfo.icone} ${modoInfo.nome.toUpperCase()} - R$ ${valor}`)
+        .setTitle(`${modoInfo.icone} ${modoInfo.nome.toUpperCase()} ${tipo} - R$ ${valor}`)
         .setDescription(
             `**╔═══════ INFORMAÇÕES ═══════╗**\n\n` +
             `**💰 Valor:** R$ ${valor}\n` +
-            `**🎮 Modo:** ${modoInfo.nome}\n` +
+            `**🎮 Modo:** ${modoInfo.nome} ${tipo}\n` +
             `**👥 Jogadores:** ${jogadores.length}/${modoInfo.jogadores}\n\n` +
             `**╠═══════ FILA ═══════╣**\n` +
             `${filaTexto}\n\n` +
