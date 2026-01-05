@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, MessageFlags } = require('discord.js');
 const { hasSuportRole } = require('../utils/permissions');
 
 // Importar dados da embed
@@ -25,7 +25,7 @@ module.exports = {
             if (!hasSuportRole(interaction.member)) {
                 return interaction.reply({
                     content: '❌ Você não tem permissão para usar este comando. É necessário ter o cargo de suporte.',
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
             }
             
@@ -36,7 +36,7 @@ module.exports = {
                 
                 const errorMessage = {
                     content: '❌ Ocorreu um erro ao executar este comando.',
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 };
                 
                 if (interaction.replied || interaction.deferred) {
@@ -63,7 +63,7 @@ module.exports = {
                     const channel = interaction.guild.channels.cache.get(data.channel);
                     await interaction.reply({
                         content: `✅ Canal de destino definido para: ${channel}`,
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     });
                 }
                 return;
@@ -85,7 +85,7 @@ module.exports = {
                     data.title = titulo;
                     await interaction.reply({
                         content: `✅ **Título definido:** ${titulo}`,
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     });
                 }
             }
@@ -98,7 +98,7 @@ module.exports = {
                     data.description = descricao;
                     await interaction.reply({
                         content: `✅ **Descrição definida!**\n> ${descricao.substring(0, 100)}${descricao.length > 100 ? '...' : ''}`,
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     });
                 }
             }
@@ -115,7 +115,7 @@ module.exports = {
                     if (isNaN(corNum)) {
                         await interaction.reply({
                             content: '❌ Cor inválida! Use o formato HEX (ex: #FF5733)',
-                            ephemeral: true
+                            flags: MessageFlags.Ephemeral
                         });
                         return;
                     }
@@ -123,7 +123,7 @@ module.exports = {
                     data.color = corNum;
                     await interaction.reply({
                         content: `✅ **Cor definida:** \`#${cor.toUpperCase()}\``,
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     });
                 }
             }
@@ -147,7 +147,7 @@ module.exports = {
                     
                     await interaction.reply({
                         content: msg,
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     });
                 }
             }

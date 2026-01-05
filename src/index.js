@@ -2,6 +2,16 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, Collection, REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
+
+// Servidor HTTP para health check do Render
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Bot Discord está online! 🤖');
+}).listen(PORT, () => {
+    console.log(`🌐 Servidor HTTP rodando na porta ${PORT}`);
+});
 
 // Criar cliente do Discord
 const client = new Client({

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
 const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
@@ -15,7 +15,7 @@ module.exports = {
         if (!fs.existsSync(configPath)) {
             return interaction.reply({
                 content: '❌ O PIX ainda não foi configurado. Use `/config_pix` primeiro.',
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
         }
         

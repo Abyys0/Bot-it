@@ -4,7 +4,8 @@ const {
     ButtonBuilder, 
     ButtonStyle,
     ChannelType,
-    PermissionFlagsBits
+    PermissionFlagsBits,
+    MessageFlags
 } = require('discord.js');
 
 module.exports = {
@@ -38,7 +39,7 @@ async function createTicket(interaction, tipo, emoji) {
     if (!parentCategory) {
         return interaction.reply({
             content: '❌ O painel deve estar em um canal dentro de uma categoria para criar tickets.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -51,11 +52,11 @@ async function createTicket(interaction, tipo, emoji) {
     if (existingTicket) {
         return interaction.reply({
             content: `❌ Você já tem um ticket de ${tipo} aberto: ${existingTicket}`,
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     
     try {
         // Criar o canal do ticket na mesma categoria

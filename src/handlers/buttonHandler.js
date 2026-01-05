@@ -7,7 +7,8 @@ const {
     PermissionFlagsBits,
     ModalBuilder,
     TextInputBuilder,
-    TextInputStyle
+    TextInputStyle,
+    MessageFlags
 } = require('discord.js');
 
 // Importar dados da embed
@@ -165,14 +166,14 @@ async function previewEmbed(interaction) {
     if (!data) {
         return interaction.reply({
             content: '❌ Nenhuma embed está sendo configurada. Use `/embed` para criar uma nova.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
     if (!data.title && !data.description) {
         return interaction.reply({
             content: '⚠️ Configure pelo menos o **título** ou a **descrição** antes de visualizar!',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -189,7 +190,7 @@ async function previewEmbed(interaction) {
     await interaction.reply({
         content: '👁️ **Preview da sua embed:**',
         embeds: [previewEmbed],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
     });
 }
 
@@ -202,21 +203,21 @@ async function sendEmbed(interaction) {
     if (!data) {
         return interaction.reply({
             content: '❌ Nenhuma embed está sendo configurada. Use `/embed` para criar uma nova.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
     if (!data.title && !data.description) {
         return interaction.reply({
             content: '⚠️ Configure pelo menos o **título** ou a **descrição** antes de enviar!',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
     if (!data.channel) {
         return interaction.reply({
             content: '⚠️ Selecione um **canal de destino** antes de enviar!',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -225,7 +226,7 @@ async function sendEmbed(interaction) {
     if (!channel) {
         return interaction.reply({
             content: '❌ Canal não encontrado. Por favor, selecione outro canal.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -254,7 +255,7 @@ async function sendEmbed(interaction) {
         console.error('Erro ao enviar embed:', error);
         await interaction.reply({
             content: '❌ Erro ao enviar a embed. Verifique se o bot tem permissão no canal.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
 }
@@ -273,7 +274,7 @@ async function createTicket(interaction, tipo, emoji) {
     if (!parentCategory) {
         return interaction.reply({
             content: '❌ O painel deve estar em um canal dentro de uma categoria para criar tickets.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -286,11 +287,11 @@ async function createTicket(interaction, tipo, emoji) {
     if (existingTicket) {
         return interaction.reply({
             content: `❌ Você já tem um ticket de ${tipo} aberto: ${existingTicket}`,
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     
     try {
         // Criar o canal do ticket na mesma categoria
@@ -416,7 +417,7 @@ async function claimTicket(interaction) {
     if (!channel.name.startsWith('compra-') && !channel.name.startsWith('suporte-')) {
         return interaction.reply({
             content: '❌ Este botão só pode ser usado em canais de ticket.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -425,7 +426,7 @@ async function claimTicket(interaction) {
     if (!member.roles.cache.has(supportRoleId)) {
         return interaction.reply({
             content: '❌ Apenas membros da equipe de suporte podem assumir tickets.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     
@@ -456,7 +457,7 @@ async function closeTicket(interaction) {
     if (!channel.name.startsWith('compra-') && !channel.name.startsWith('suporte-')) {
         return interaction.reply({
             content: '❌ Este comando só pode ser usado em canais de ticket.',
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
     

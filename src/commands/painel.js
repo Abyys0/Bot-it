@@ -34,7 +34,7 @@ module.exports = {
                 '```'
             )
             .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 256 }))
-            .setImage('https://i.imgur.com/wSTFkRM.png') // Banner decorativo
+            .setImage('https://cdn.discordapp.com/attachments/1433927359018434800/1457589373372596327/Gemini_Generated_Image_np3l62np3l62np3l.png?ex=695c8d63&is=695b3be3&hm=9677a8ad3a8267b5c6adde3945ec04aded40dcafacfdc21ba033e2428e8492e5&') // Banner decorativo
             .setFooter({ 
                 text: '🔽 Selecione uma opção abaixo para abrir um ticket', 
                 iconURL: interaction.client.user.displayAvatarURL() 

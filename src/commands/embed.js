@@ -8,7 +8,8 @@ const {
     StringSelectMenuBuilder,
     ChannelType,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
 } = require('discord.js');
 
 // Armazenar dados temporários da embed sendo criada
@@ -123,7 +124,7 @@ module.exports = {
         await interaction.reply({
             embeds: [previewEmbed],
             components: [row1, row2, row3],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
 };
