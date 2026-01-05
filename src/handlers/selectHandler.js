@@ -31,6 +31,11 @@ module.exports = {
         
         // === HANDLERS DE SALAS DE JOGO ===
         
+        // Menu de criação automática de salas
+        if (customId.startsWith('criarsalas_menu_')) {
+            await handleCriarSalasMenu(interaction);
+        }
+        
         // Seleção de gelo (1x1)
         if (customId.startsWith('gelo_')) {
             await handleSelecaoGelo(interaction);
@@ -259,3 +264,57 @@ async function handleSelecaoVencedor(interaction) {
                 `✅ *Partida finalizada com sucesso!*`
     });
 }
+
+/**
+ * Handler para o menu de criação automática de salas
+ */
+async function handleCriarSalasMenu(interaction) {
+    const cargoSuporteId = interaction.customId.replace('criarsalas_menu_', '');
+    const tipoSelecionado = interaction.values[0];
+    
+    // Verificar permissões
+    if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        return interaction.update({
+            content: '❌ Você precisa ser administrador para usar este comando!',
+            embeds: [],
+            components: []
+        });
+    }
+    
+    // Importar a função de criação
+    const { criarSalasPorTipo, TIPOS_SALA } = require('../commands/criarsalas');
+    const tipoConfig = TIPOS_SALA[tipoSelecionado];
+    
+    await interaction.update({
+        content: `⏳ Criando painéis para **${tipoConfig.emoji} ${tipoConfig.nome}**...\n\n` +
+                `📂 Categoria: ${tipoConfig.categoria}\n` +
+                `📝 Canais: ${tipoConfig.canais.join(', ')}\n\n` +
+                `*Isso pode levar alguns segundos...*`,
+        embeds: [],
+        components: []
+    });
+    
+    // Executar criação
+    const resultado = await criarSalasPorTipo(interaction, tipoSelecionado, cargoSuporteId);
+    
+    if (!resultado.success) {
+        return interaction.editReply({
+            content: `❌ **Erro:** ${resultado.message}`
+        });
+    }
+    
+    // Montar mensagem de resultado
+    let mensagem = `✅ **Painéis criados com sucesso!**\n\n` +
+                   `${resultado.emoji} **Tipo:** ${resultado.tipo}\n` +
+                   `📂 **Canais processados:** ${resultado.canaisCriados}\n` +
+                   `📊 **Total de painéis:** ${resultado.paineisCriados}\n`;
+    
+    if (resultado.erros.length > 0) {
+        mensagem += `\n⚠️ **Avisos:**\n${resultado.erros.map(e => `• ${e}`).join('\n')}`;
+    }
+    
+    await interaction.editReply({
+        content: mensagem
+    });
+}
+
