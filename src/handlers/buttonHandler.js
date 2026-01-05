@@ -20,9 +20,58 @@ try {
     embedData = new Map();
 }
 
+// Importar gerenciadores de sala
+const queueManager = require('../utils/queueManager');
+const matchManager = require('../utils/matchManager');
+const { atualizarEmbedFila, MODOS } = require('../utils/panelTemplates');
+
+// Armazenar seleções temporárias dos jogadores (compartilhado com selectHandler)
+const playerSelections = new Map();
+
+// Exportar playerSelections para ser usado pelo selectHandler
+module.exports.playerSelections = playerSelections;
+
 module.exports = {
     async execute(interaction) {
         const customId = interaction.customId;
+        
+        // === HANDLERS DE SALAS DE JOGO ===
+        
+        // Entrar na fila
+        if (customId.startsWith('entrar_fila_')) {
+            await handleEntrarFila(interaction);
+            return;
+        }
+        
+        // Sair da fila
+        if (customId.startsWith('sair_fila_')) {
+            await handleSairFila(interaction);
+            return;
+        }
+        
+        // Marcar como pronto
+        if (customId.startsWith('pronto_')) {
+            await handlePronto(interaction);
+            return;
+        }
+        
+        // Cancelar partida (apenas suporte)
+        if (customId.startsWith('cancelar_')) {
+            await handleCancelarPartida(interaction);
+            return;
+        }
+        
+        // Confirmar pagamento (apenas suporte)
+        if (customId.startsWith('confirmar_pagamento_')) {
+            await handleConfirmarPagamento(interaction);
+            return;
+        }
+        
+        // Definir vencedor (apenas suporte)
+        if (customId.startsWith('vencedor_')) {
+            await handleVencedor(interaction);
+            return;
+        }
         
         // Ticket de Compra
         if (customId === 'ticket_compra') {
@@ -514,4 +563,306 @@ async function closeTicket(interaction) {
             console.error('Erro ao deletar canal:', error);
         }
     }, 5000);
+}
+
+// ========== HANDLERS DE SALAS DE JOGO ==========
+
+/**
+ * Handler para entrar na fila
+ */
+async function handleEntrarFila(interaction) {
+    const painelId = interaction.customId.replace('entrar_fila_', '');
+    const userId = interaction.user.id;
+    
+    // Verificar se o jogador já selecionou as opções
+    const selecao = playerSelections.get(`${userId}_${painelId}`);
+    
+    if (!selecao || !selecao.arma) {
+        return interaction.reply({
+            content: '⚠️ Selecione uma **arma** antes de entrar na fila!',
+            ephemeral: true
+        });
+    }
+    
+    const salas = queueManager.loadSalas();
+    const painel = salas.paineis[painelId];
+    
+    // Para modo 1x1, verificar se selecionou o gelo
+    if (painel.modo === '1x1' && !selecao.gelo) {
+        return interaction.reply({
+            content: '⚠️ Selecione o **tipo de gelo** antes de entrar na fila!',
+            ephemeral: true
+        });
+    }
+    
+    // Adicionar à fila
+    const resultado = queueManager.adicionarJogadorFila(painelId, userId, selecao);
+    
+    if (!resultado.success) {
+        return interaction.reply({
+            content: `❌ ${resultado.message}`,
+            ephemeral: true
+        });
+    }
+    
+    // Atualizar painel da fila
+    const modoInfo = MODOS[painel.modo];
+    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.valor, resultado.fila, modoInfo);
+    
+    await interaction.message.edit({ embeds: [embedAtualizado] });
+    
+    await interaction.reply({
+        content: `✅ ${resultado.message}`,
+        ephemeral: true
+    });
+    
+    // Se a fila completou, criar partida
+    if (resultado.filaCompleta) {
+        try {
+            const { canal, partidaId } = await matchManager.criarCanalPartida(
+                interaction.guild,
+                painelId,
+                resultado.fila
+            );
+            
+            // Limpar a fila
+            queueManager.limparFila(painelId);
+            
+            // Limpar seleções dos jogadores
+            resultado.fila.forEach(j => {
+                playerSelections.delete(`${j.userId}_${painelId}`);
+            });
+            
+            // Resetar embed da fila
+            const embedReset = atualizarEmbedFila(painel.modo, painel.valor, [], modoInfo);
+            await interaction.message.edit({ embeds: [embedReset] });
+            
+            // Notificar no canal original
+            await interaction.channel.send({
+                content: `🎮 Partida iniciada! ${resultado.fila.map(j => `<@${j.userId}>`).join(' ')} - ${canal}`,
+                allowedMentions: { parse: [] }
+            });
+            
+        } catch (error) {
+            console.error('Erro ao criar partida:', error);
+            await interaction.followUp({
+                content: '❌ Erro ao criar a partida. Tente novamente.',
+                ephemeral: true
+            });
+        }
+    }
+}
+
+/**
+ * Handler para sair da fila
+ */
+async function handleSairFila(interaction) {
+    const painelId = interaction.customId.replace('sair_fila_', '');
+    const userId = interaction.user.id;
+    
+    const resultado = queueManager.removerJogadorFila(painelId, userId);
+    
+    if (!resultado.success) {
+        return interaction.reply({
+            content: `❌ ${resultado.message}`,
+            ephemeral: true
+        });
+    }
+    
+    // Limpar seleção do jogador
+    playerSelections.delete(`${userId}_${painelId}`);
+    
+    // Atualizar painel
+    const salas = queueManager.loadSalas();
+    const painel = salas.paineis[painelId];
+    const modoInfo = MODOS[painel.modo];
+    const embedAtualizado = atualizarEmbedFila(painel.modo, painel.valor, resultado.fila, modoInfo);
+    
+    await interaction.message.edit({ embeds: [embedAtualizado] });
+    
+    await interaction.reply({
+        content: `✅ ${resultado.message}`,
+        ephemeral: true
+    });
+}
+
+/**
+ * Handler para marcar como pronto
+ */
+async function handlePronto(interaction) {
+    const partidaId = interaction.customId.replace('pronto_', '');
+    const userId = interaction.user.id;
+    
+    const resultado = matchManager.marcarPronto(partidaId, userId);
+    
+    if (!resultado.success) {
+        return interaction.reply({
+            content: `❌ ${resultado.message}`,
+            ephemeral: true
+        });
+    }
+    
+    await interaction.reply({
+        content: `✅ ${resultado.message}`,
+        ephemeral: true
+    });
+    
+    // Atualizar painel da partida
+    await matchManager.atualizarPainelPartida(interaction.client, partidaId);
+    
+    // Se todos prontos, notificar
+    if (resultado.todosprontos) {
+        await interaction.channel.send({
+            content: '🎮 **TODOS PRONTOS! A PARTIDA COMEÇOU!**\n\n' +
+                    '📋 *Aguardando confirmação de pagamento pela equipe de suporte...*'
+        });
+    }
+}
+
+/**
+ * Handler para cancelar partida (apenas suporte)
+ */
+async function handleCancelarPartida(interaction) {
+    const partidaId = interaction.customId.replace('cancelar_', '');
+    
+    const salas = queueManager.loadSalas();
+    const partida = salas.partidas[partidaId];
+    
+    if (!partida) {
+        return interaction.reply({
+            content: '❌ Partida não encontrada!',
+            ephemeral: true
+        });
+    }
+    
+    // Verificar permissão de suporte
+    const member = interaction.member;
+    const temPermissao = member.roles.cache.has(partida.cargoSuporteId) ||
+                        member.permissions.has(PermissionFlagsBits.Administrator);
+    
+    if (!temPermissao) {
+        return interaction.reply({
+            content: '❌ Apenas membros do suporte podem cancelar partidas!',
+            ephemeral: true
+        });
+    }
+    
+    await interaction.reply({
+        content: '⏳ Cancelando partida...',
+        ephemeral: true
+    });
+    
+    // Notificar jogadores
+    await interaction.channel.send({
+        content: `❌ **PARTIDA CANCELADA**\n\n` +
+                `Cancelado por: ${interaction.user}\n` +
+                `Motivo: Cancelamento manual pelo suporte\n\n` +
+                `*Este canal será deletado em 10 segundos...*`
+    });
+    
+    // Aguardar e cancelar
+    setTimeout(async () => {
+        await matchManager.cancelarPartida(interaction.client, partidaId, interaction.user.id);
+    }, 10000);
+}
+
+/**
+ * Handler para confirmar pagamento (apenas suporte)
+ */
+async function handleConfirmarPagamento(interaction) {
+    const partidaId = interaction.customId.replace('confirmar_pagamento_', '');
+    
+    const salas = queueManager.loadSalas();
+    const partida = salas.partidas[partidaId];
+    
+    if (!partida) {
+        return interaction.reply({
+            content: '❌ Partida não encontrada!',
+            ephemeral: true
+        });
+    }
+    
+    // Verificar permissão de suporte
+    const member = interaction.member;
+    const temPermissao = member.roles.cache.has(partida.cargoSuporteId) ||
+                        member.permissions.has(PermissionFlagsBits.Administrator);
+    
+    if (!temPermissao) {
+        return interaction.reply({
+            content: '❌ Apenas membros do suporte podem confirmar pagamentos!',
+            ephemeral: true
+        });
+    }
+    
+    // Atualizar status da partida
+    partida.status = 'aguardando_pagamento';
+    partida.pagamentoConfirmadoPor = interaction.user.id;
+    partida.pagamentoConfirmadoEm = Date.now();
+    queueManager.saveSalas(salas);
+    
+    await interaction.reply({
+        content: '✅ Pagamento confirmado!',
+        ephemeral: true
+    });
+    
+    await interaction.channel.send({
+        content: `💰 **PAGAMENTO CONFIRMADO**\n\n` +
+                `Confirmado por: ${interaction.user}\n` +
+                `Horário: <t:${Math.floor(Date.now() / 1000)}:F>\n\n` +
+                `✅ *A partida pode prosseguir!*`
+    });
+    
+    await matchManager.atualizarPainelPartida(interaction.client, partidaId);
+}
+
+/**
+ * Handler para definir vencedor (apenas suporte)
+ */
+async function handleVencedor(interaction) {
+    const partidaId = interaction.customId.replace('vencedor_', '');
+    
+    const salas = queueManager.loadSalas();
+    const partida = salas.partidas[partidaId];
+    
+    if (!partida) {
+        return interaction.reply({
+            content: '❌ Partida não encontrada!',
+            ephemeral: true
+        });
+    }
+    
+    // Verificar permissão de suporte
+    const member = interaction.member;
+    const temPermissao = member.roles.cache.has(partida.cargoSuporteId) ||
+                        member.permissions.has(PermissionFlagsBits.Administrator);
+    
+    if (!temPermissao) {
+        return interaction.reply({
+            content: '❌ Apenas membros do suporte podem definir vencedores!',
+            ephemeral: true
+        });
+    }
+    
+    // Criar menu de seleção de vencedor
+    const { StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
+    
+    const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId(`selecionar_vencedor_${partidaId}`)
+        .setPlaceholder('Selecione o vencedor')
+        .addOptions(
+            partida.jogadores.map((j, i) => ({
+                label: `Jogador ${i + 1}`,
+                description: `User ID: ${j.userId}`,
+                value: j.userId,
+                emoji: '🏆'
+            }))
+        );
+    
+    const row = new ActionRowBuilder().addComponents(selectMenu);
+    
+    await interaction.reply({
+        content: '🏆 Selecione o vencedor da partida:',
+        components: [row],
+        ephemeral: true
+    });
 }

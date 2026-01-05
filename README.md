@@ -1,6 +1,6 @@
-# 🤖 Bot-it - Bot Discord de Suporte
+# 🤖 Bot-it - Bot Discord de Suporte e Salas de Jogo
 
-Bot para Discord com sistema completo de suporte, tickets e pagamentos via PIX.
+Bot para Discord com sistema completo de suporte, tickets, pagamentos via PIX e **gerenciamento de salas de jogo competitivas**.
 
 ## 📋 Funcionalidades
 
@@ -9,6 +9,18 @@ Bot para Discord com sistema completo de suporte, tickets e pagamentos via PIX.
   - Tickets privados (visíveis apenas para quem abriu e equipe de suporte)
   - Tickets criados na mesma categoria do painel
   - Fechamento de ticket com deleção automática
+
+- **🎮 Sistema de Salas de Jogo** ⭐ NOVO
+  - Criação automática de painéis de fila por modo e valor
+  - Suporte para modos: 1x1, 2x2, 3x3, 4x4
+  - Valores de R$ 0,50 até R$ 100,00
+  - Opções personalizadas (Gelo Infinito/Normal para 1x1, armas)
+  - Filas automáticas com contadores em tempo real
+  - Criação de canais privados para partidas
+  - Sistema de confirmação "Pronto" para jogadores
+  - Painéis de gerenciamento para suporte (pagamento, vencedor, cancelar)
+  - **[📖 Ver documentação completa do sistema de salas](SISTEMA_SALAS.md)**
+  - **[⚡ Ver guia rápido de uso](GUIA_RAPIDO.md)**
 
 - **💰 Sistema PIX**
   - Configuração de chave PIX (CPF, CNPJ, E-mail, Telefone ou Chave Aleatória)
@@ -97,13 +109,46 @@ https://discord.com/api/oauth2/authorize?client_id=SEU_CLIENT_ID&permissions=805
 
 ## 📝 Comandos
 
+### Comandos de Suporte
 | Comando | Descrição |
 |---------|-----------|
 | `/painel` | Envia o painel de suporte no canal atual |
 | `/config_pix` | Configura a chave PIX para pagamentos |
 | `/pix` | Envia a chave PIX configurada com QR Code |
 
+### Comandos de Salas de Jogo ⭐
+| Comando | Descrição |
+|---------|-----------|
+| `/criarsala` | Cria painéis de salas de jogo (1x1, 2x2, 3x3, 4x4) |
+
 > ⚠️ **Nota:** Todos os comandos só podem ser usados por membros com o cargo de suporte configurado.
+
+## 🎮 Como funciona o Sistema de Salas
+
+1. **Criação dos Painéis**
+   ```
+   /criarsala modo:1x1 canal:#1x1-mobile cargo_suporte:@Suporte
+   ```
+   - Cria categoria automaticamente
+   - Envia painéis para cada valor (R$0,50 até R$100,00)
+   - Configura sistema de filas
+
+2. **Jogadores Entram na Fila**
+   - Selecionam tipo de gelo (apenas 1x1)
+   - Selecionam arma (Full XM8 ou UMP)
+   - Clicam em "Entrar na Fila"
+
+3. **Partida Inicia Automaticamente**
+   - Quando a fila completa (2+ jogadores)
+   - Bot cria canal privado
+   - Jogadores confirmam com botão "Pronto"
+
+4. **Suporte Gerencia**
+   - Confirma pagamento
+   - Define vencedor
+   - Pode cancelar se necessário
+
+📖 **[Ver documentação completa](SISTEMA_SALAS.md)** | ⚡ **[Ver guia rápido](GUIA_RAPIDO.md)**
 
 ## 🎫 Como funciona o Sistema de Tickets
 
@@ -131,22 +176,31 @@ Bot-it/
 │   ├── commands/
 │   │   ├── painel.js
 │   │   ├── config_pix.js
-│   │   └── pix.js
+│   │   ├── pix.js
+│   │   └── criarsala.js          ⭐ Novo
 │   ├── events/
 │   │   ├── ready.js
 │   │   └── interactionCreate.js
 │   ├── handlers/
-│   │   └── buttonHandler.js
+│   │   ├── buttonHandler.js       (atualizado)
+│   │   └── selectHandler.js       (atualizado)
 │   ├── utils/
-│   │   └── permissions.js
+│   │   ├── permissions.js
+│   │   ├── queueManager.js        ⭐ Novo
+│   │   ├── matchManager.js        ⭐ Novo
+│   │   └── panelTemplates.js      ⭐ Novo
 │   └── index.js
 ├── config/
-│   └── pix.json (gerado automaticamente)
+│   ├── pix.json
+│   ├── servers.json
+│   └── salas.json                 ⭐ Novo
 ├── .env
 ├── .env.example
 ├── .gitignore
 ├── package.json
-└── README.md
+├── README.md
+├── SISTEMA_SALAS.md               ⭐ Novo
+└── GUIA_RAPIDO.md                 ⭐ Novo
 ```
 
 ## 🛠️ Tecnologias Utilizadas
