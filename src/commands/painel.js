@@ -20,6 +20,7 @@ module.exports = {
                 '*⚠️ Não abra tickets desnecessários!*'
             )
             .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 256 }))
+            .setImage('https://cdn.discordapp.com/attachments/1433927359018434800/1457591098854605002/Gemini_Generated_Image_np3l62np3l62np3l.png?ex=695c8efe&is=695b3d7e&hm=d2242612eb07dc7eadd240ad1c80e8bc84212eaa9d749f47315f43fdc5c22b4b&')
             .setFooter({ 
                 text: `${interaction.guild.name} • Suporte`, 
                 iconURL: interaction.client.user.displayAvatarURL() 
