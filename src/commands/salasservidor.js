@@ -16,29 +16,97 @@ module.exports = {
         
         const guild = interaction.guild;
         
-        // Estrutura das categorias e canais
+        // Estrutura das categorias e canais (ordem de cima para baixo)
         const estrutura = [
             {
+                nome: '❗ · IMPORTANTE!',
+                canais: [
+                    { nome: 'regras-x1', tipo: 'texto', emoji: '📚' },
+                    { nome: 'regras', tipo: 'texto', emoji: '📚' },
+                    { nome: 'preços', tipo: 'texto', emoji: '💰' },
+                    { nome: 'avisos', tipo: 'texto', emoji: '📢' },
+                    { nome: 'chat', tipo: 'texto', emoji: '💬' }
+                ]
+            },
+            {
+                nome: '🏆 · RANKING',
+                canais: [
+                    { nome: 'top-jogadores', tipo: 'texto', emoji: '🥇' },
+                    { nome: 'top-wins', tipo: 'texto', emoji: '🏅' }
+                ]
+            },
+            {
+                nome: '📞 · SUPORTE',
+                canais: [
+                    { nome: 'suporte', tipo: 'texto', emoji: '📩' },
+                    { nome: 'atendimento-1', tipo: 'voz', emoji: '🎧' },
+                    { nome: 'atendimento-2', tipo: 'voz', emoji: '🎧' }
+                ]
+            },
+            {
                 nome: '📱 · MOBILE',
-                canais: ['1x1-mobile', '2x2-mobile', '3x3-mobile', '4x4-mobile']
+                canais: [
+                    { nome: '1x1-mobile', tipo: 'texto' },
+                    { nome: '2x2-mobile', tipo: 'texto' },
+                    { nome: '3x3-mobile', tipo: 'texto' },
+                    { nome: '4x4-mobile', tipo: 'texto' }
+                ]
             },
             {
                 nome: '🖥️ · EMULADOR',
-                canais: ['1x1-emulador', '2x2-emulador', '3x3-emulador', '4x4-emulador']
+                canais: [
+                    { nome: '1x1-emulador', tipo: 'texto' },
+                    { nome: '2x2-emulador', tipo: 'texto' },
+                    { nome: '3x3-emulador', tipo: 'texto' },
+                    { nome: '4x4-emulador', tipo: 'texto' }
+                ]
             },
             {
                 nome: '🔀 · MISTO',
-                canais: ['2x2-misto', '3x3-misto', '4x4-misto']
+                canais: [
+                    { nome: '2x2-misto', tipo: 'texto' },
+                    { nome: '3x3-misto', tipo: 'texto' },
+                    { nome: '4x4-misto', tipo: 'texto' }
+                ]
             },
             {
                 nome: '🚩 · TÁTICO',
-                canais: ['1x1-tático', '2x2-tático', '3x3-tático', '4x4-tático']
+                canais: [
+                    { nome: '1x1-tático', tipo: 'texto' },
+                    { nome: '2x2-tático', tipo: 'texto' },
+                    { nome: '3x3-tático', tipo: 'texto' },
+                    { nome: '4x4-tático', tipo: 'texto' }
+                ]
+            },
+            {
+                nome: '🔍 · ANALISES',
+                canais: [
+                    { nome: 'exposed', tipo: 'texto', emoji: '🚫' },
+                    { nome: 'blacklist', tipo: 'texto', emoji: '🚫' },
+                    { nome: 'regras-telagem', tipo: 'texto', emoji: '🎬' },
+                    { nome: 'ANALISE 1', tipo: 'voz' },
+                    { nome: 'ANALISE 2', tipo: 'voz' },
+                    { nome: 'ANALISE 3', tipo: 'voz' },
+                    { nome: 'ANALISE 4', tipo: 'voz' },
+                    { nome: 'ANALISE 5', tipo: 'voz' },
+                    { nome: 'ANALISE 6', tipo: 'voz' },
+                    { nome: 'ANALISE 7', tipo: 'voz' },
+                    { nome: 'ANALISE 8', tipo: 'voz' },
+                    { nome: 'ANALISE 9', tipo: 'voz' },
+                    { nome: 'ANALISE 10', tipo: 'voz' },
+                    { nome: 'ANALISE 11', tipo: 'voz' },
+                    { nome: 'ANALISE 12', tipo: 'voz' },
+                    { nome: 'ANALISE 13', tipo: 'voz' },
+                    { nome: 'ANALISE 14', tipo: 'voz' },
+                    { nome: 'ANALISE 15', tipo: 'voz' }
+                ]
             }
         ];
         
         let criados = {
             categorias: 0,
-            canais: 0
+            canaisTexto: 0,
+            canaisVoz: 0
         };
         
         try {
@@ -52,28 +120,42 @@ module.exports = {
                 
                 // Criar canais dentro da categoria
                 for (const canal of categoria.canais) {
+                    const tipoCanal = canal.tipo === 'voz' 
+                        ? ChannelType.GuildVoice 
+                        : ChannelType.GuildText;
+                    
                     await guild.channels.create({
-                        name: canal,
-                        type: ChannelType.GuildText,
+                        name: canal.nome,
+                        type: tipoCanal,
                         parent: novaCategoria.id
                     });
-                    criados.canais++;
+                    
+                    if (canal.tipo === 'voz') {
+                        criados.canaisVoz++;
+                    } else {
+                        criados.canaisTexto++;
+                    }
                 }
             }
             
             // Embed de sucesso
             const embed = new EmbedBuilder()
                 .setColor(0x57F287)
-                .setTitle('✅ Salas Criadas com Sucesso!')
+                .setTitle('✅ Servidor Configurado com Sucesso!')
                 .setDescription(
-                    `**Estrutura criada:**\n\n` +
+                    `**Estrutura completa criada:**\n\n` +
                     `📁 **Categorias:** \`${criados.categorias}\`\n` +
-                    `💬 **Canais:** \`${criados.canais}\`\n\n` +
+                    `💬 **Canais de Texto:** \`${criados.canaisTexto}\`\n` +
+                    `🔊 **Canais de Voz:** \`${criados.canaisVoz}\`\n\n` +
                     `**Categorias criadas:**\n` +
+                    `> ❗ IMPORTANTE! (5 canais)\n` +
+                    `> 🏆 RANKING (2 canais)\n` +
+                    `> 📞 SUPORTE (3 canais)\n` +
                     `> 📱 MOBILE (4 canais)\n` +
                     `> 🖥️ EMULADOR (4 canais)\n` +
                     `> 🔀 MISTO (3 canais)\n` +
-                    `> 🚩 TÁTICO (4 canais)`
+                    `> 🚩 TÁTICO (4 canais)\n` +
+                    `> 🔍 ANALISES (18 canais)`
                 )
                 .setFooter({ text: `Criado por ${interaction.user.tag}` })
                 .setTimestamp();
