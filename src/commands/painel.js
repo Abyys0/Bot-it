@@ -6,35 +6,59 @@ module.exports = {
         .setDescription('Envia o painel de suporte no canal atual'),
     
     async execute(interaction) {
-        // Criar embed do painel
+        // Criar embed do painel - Design moderno e elegante
         const embed = new EmbedBuilder()
-            .setColor(0x2B2D31)
-            .setTitle('🎫 Central de Atendimento')
+            .setColor(0x5865F2) // Cor Discord Blurple
+            .setAuthor({ 
+                name: interaction.guild.name, 
+                iconURL: interaction.guild.iconURL({ dynamic: true }) 
+            })
+            .setTitle('╭─────────────────────╮\n🎫  Central de Atendimento\n╰─────────────────────╯')
             .setDescription(
-                '**Bem-vindo ao nosso sistema de suporte!**\n\n' +
-                'Selecione uma das opções abaixo para ser atendido.'
+                '> *Estamos aqui para ajudar você!*\n\n' +
+                '```fix\n' +
+                '═══════════════════════════════════\n' +
+                '          BEM-VINDO AO SUPORTE\n' +
+                '═══════════════════════════════════\n' +
+                '```\n\n' +
+                '**📋 Como funciona?**\n' +
+                '╰ Selecione uma opção no menu abaixo e um canal privado será criado para você.\n\n' +
+                '**⏰ Horário de Atendimento**\n' +
+                '╰ Segunda a Sexta: `09:00 - 18:00`\n' +
+                '╰ Sábado: `09:00 - 12:00`\n\n' +
+                '**📌 Opções Disponíveis:**\n\n' +
+                '> 💬 **Suporte** — Dúvidas, problemas ou ajuda geral\n' +
+                '> 🛒 **Comprar Serviço** — Adquira nossos produtos/serviços\n\n' +
+                '```\n' +
+                '⚠️ Não abra tickets desnecessários!\n' +
+                '```'
             )
-            .setFooter({ text: 'Selecione uma opção no menu abaixo' })
+            .setThumbnail(interaction.guild.iconURL({ dynamic: true, size: 256 }))
+            .setImage('https://i.imgur.com/wSTFkRM.png') // Banner decorativo
+            .setFooter({ 
+                text: '🔽 Selecione uma opção abaixo para abrir um ticket', 
+                iconURL: interaction.client.user.displayAvatarURL() 
+            })
             .setTimestamp();
         
-        // Criar Select Menu (dropdown)
+        // Criar Select Menu (dropdown) estilizado
         const row = new ActionRowBuilder()
             .addComponents(
                 new StringSelectMenuBuilder()
                     .setCustomId('ticket_menu')
-                    .setPlaceholder('Clique aqui para ver as opções')
+                    .setPlaceholder('🎫 Clique aqui para selecionar')
                     .addOptions([
                         {
-                            label: 'Suporte',
-                            description: 'Preciso de suporte',
+                            label: '💬 Suporte Geral',
+                            description: '📝 Tire suas dúvidas ou relate um problema',
                             value: 'ticket_suporte',
-                            emoji: '💬'
+                            emoji: '🔧'
                         },
                         {
-                            label: 'Comprar Serviço',
-                            description: 'Aguarde ser atendido!',
+                            label: '🛒 Comprar Serviço',
+                            description: '💰 Adquira nossos produtos e serviços',
                             value: 'ticket_compra',
-                            emoji: '🛒'
+                            emoji: '💎'
                         }
                     ])
             );
@@ -47,7 +71,7 @@ module.exports = {
         
         // Confirmar para o usuário
         await interaction.reply({
-            content: '✅ Painel de suporte enviado com sucesso!',
+            content: '✅ **Painel de suporte enviado com sucesso!**\n> O painel está pronto para receber tickets.',
             ephemeral: true
         });
     }

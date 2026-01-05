@@ -95,31 +95,58 @@ async function createTicket(interaction, tipo, emoji) {
             ]
         });
         
-        // Definir título baseado no tipo
-        const titulo = tipo === 'compra' ? 'Comprar Serviço' : 'Suporte';
+        // Definir título e cores baseado no tipo
+        const titulo = tipo === 'compra' ? 'Comprar Serviço' : 'Suporte Geral';
+        const corEmbed = tipo === 'compra' ? 0x57F287 : 0x5865F2;
+        const icone = tipo === 'compra' ? '💎' : '🔧';
         
-        // Criar embed de boas-vindas do ticket
+        // Criar embed de boas-vindas do ticket - Design elegante
         const ticketEmbed = new EmbedBuilder()
-            .setColor(tipo === 'compra' ? 0x57F287 : 0x5865F2)
-            .setTitle(`${emoji} Ticket de ${titulo}`)
+            .setColor(corEmbed)
+            .setAuthor({ 
+                name: `${guild.name} — Sistema de Tickets`, 
+                iconURL: guild.iconURL({ dynamic: true }) 
+            })
+            .setTitle(`${icone} Ticket de ${titulo}`)
             .setDescription(
-                `Olá ${user}! Bem-vindo ao seu ticket.\n\n` +
-                `**Tipo:** ${titulo}\n` +
-                `**Aberto por:** ${user.tag}\n` +
-                `**Data:** <t:${Math.floor(Date.now() / 1000)}:F>\n\n` +
-                `Por favor, descreva detalhadamente o que você precisa e aguarde um membro da equipe de suporte.`
+                `╭───────────────────────────╮\n` +
+                `   **Bem-vindo(a) ao seu ticket!**\n` +
+                `╰───────────────────────────╯\n\n` +
+                `> Olá ${user}! Sua solicitação foi recebida.\n\n` +
+                `**📋 Informações do Ticket**\n` +
+                `┣ **Tipo:** \`${titulo}\`\n` +
+                `┣ **Usuário:** ${user}\n` +
+                `┣ **Tag:** \`${user.tag}\`\n` +
+                `┣ **ID:** \`${user.id}\`\n` +
+                `┗ **Aberto em:** <t:${Math.floor(Date.now() / 1000)}:F>\n\n` +
+                `**📝 Próximos Passos:**\n` +
+                `> 1️⃣ Descreva detalhadamente sua solicitação\n` +
+                `> 2️⃣ Aguarde um membro da equipe\n` +
+                `> 3️⃣ Seja claro e objetivo\n\n` +
+                `\`\`\`diff\n` +
+                `+ Nossa equipe responderá em breve!\n` +
+                `\`\`\``
             )
-            .setFooter({ text: 'Clique no botão abaixo para fechar o ticket' })
+            .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 256 }))
+            .setFooter({ 
+                text: `${emoji} Ticket #${ticketChannel.name}`, 
+                iconURL: guild.iconURL({ dynamic: true }) 
+            })
             .setTimestamp();
         
-        // Botão de fechar ticket
+        // Botões de ação do ticket
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('ticket_fechar')
                     .setLabel('Fechar Ticket')
                     .setEmoji('🔒')
-                    .setStyle(ButtonStyle.Danger)
+                    .setStyle(ButtonStyle.Danger),
+                new ButtonBuilder()
+                    .setCustomId('ticket_claim')
+                    .setLabel('Assumir Ticket')
+                    .setEmoji('✋')
+                    .setStyle(ButtonStyle.Success)
             );
         
         // Enviar mensagem no ticket
