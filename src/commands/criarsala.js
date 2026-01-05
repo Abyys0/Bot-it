@@ -92,13 +92,6 @@ module.exports = {
                     cargoSuporteId: cargoSuporte.id,
                     categoriaId: categoriaId // Usar a categoria do canal atual
                 };
-                    valor: valor,
-                    messageId: message.id,
-                    channelId: canal.id,
-                    guildId: interaction.guild.id,
-                    cargoSuporteId: cargoSuporte.id,
-                    categoriaId: categoria.id
-                };
                 
                 // Inicializar fila vazia
                 salas.filas[painelId] = [];
