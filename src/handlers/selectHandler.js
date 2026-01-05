@@ -7,6 +7,7 @@ const {
     PermissionFlagsBits,
     MessageFlags
 } = require('discord.js');
+const { getServerConfig } = require('../utils/permissions');
 
 module.exports = {
     async execute(interaction) {
@@ -31,7 +32,13 @@ module.exports = {
 async function createTicket(interaction, tipo, emoji) {
     const guild = interaction.guild;
     const user = interaction.user;
-    const supportRoleId = process.env.SUPPORT_ROLE_ID;
+    
+    // Buscar cargo de suporte da configuração do servidor ou do .env
+    const serverConfig = getServerConfig(guild.id);
+    const supportRoleId = serverConfig?.supportRoleId || process.env.SUPPORT_ROLE_ID;
+    
+    // Verificar se o cargo existe no servidor
+    const supportRole = supportRoleId ? guild.roles.cache.get(supportRoleId) : null;
     
     // Verificar se o canal atual está em uma categoria
     const parentCategory = interaction.channel.parent;
@@ -59,41 +66,47 @@ async function createTicket(interaction, tipo, emoji) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     
     try {
+        // Configurar permissões base
+        const permissionOverwrites = [
+            {
+                // Negar acesso a todos (@everyone)
+                id: guild.id,
+                deny: [PermissionFlagsBits.ViewChannel]
+            },
+            {
+                // Permitir acesso ao usuário que abriu
+                id: user.id,
+                allow: [
+                    PermissionFlagsBits.ViewChannel,
+                    PermissionFlagsBits.SendMessages,
+                    PermissionFlagsBits.ReadMessageHistory,
+                    PermissionFlagsBits.AttachFiles,
+                    PermissionFlagsBits.EmbedLinks
+                ]
+            }
+        ];
+        
+        // Adicionar permissão do cargo de suporte apenas se existir
+        if (supportRole) {
+            permissionOverwrites.push({
+                id: supportRole.id,
+                allow: [
+                    PermissionFlagsBits.ViewChannel,
+                    PermissionFlagsBits.SendMessages,
+                    PermissionFlagsBits.ReadMessageHistory,
+                    PermissionFlagsBits.AttachFiles,
+                    PermissionFlagsBits.EmbedLinks,
+                    PermissionFlagsBits.ManageMessages
+                ]
+            });
+        }
+        
         // Criar o canal do ticket na mesma categoria
         const ticketChannel = await guild.channels.create({
             name: `${tipo}-${user.username}`,
             type: ChannelType.GuildText,
             parent: parentCategory.id,
-            permissionOverwrites: [
-                {
-                    // Negar acesso a todos (@everyone)
-                    id: guild.id,
-                    deny: [PermissionFlagsBits.ViewChannel]
-                },
-                {
-                    // Permitir acesso ao usuário que abriu
-                    id: user.id,
-                    allow: [
-                        PermissionFlagsBits.ViewChannel,
-                        PermissionFlagsBits.SendMessages,
-                        PermissionFlagsBits.ReadMessageHistory,
-                        PermissionFlagsBits.AttachFiles,
-                        PermissionFlagsBits.EmbedLinks
-                    ]
-                },
-                {
-                    // Permitir acesso ao cargo de suporte
-                    id: supportRoleId,
-                    allow: [
-                        PermissionFlagsBits.ViewChannel,
-                        PermissionFlagsBits.SendMessages,
-                        PermissionFlagsBits.ReadMessageHistory,
-                        PermissionFlagsBits.AttachFiles,
-                        PermissionFlagsBits.EmbedLinks,
-                        PermissionFlagsBits.ManageMessages
-                    ]
-                }
-            ]
+            permissionOverwrites: permissionOverwrites
         });
         
         // Definir título e cores baseado no tipo
@@ -151,8 +164,9 @@ async function createTicket(interaction, tipo, emoji) {
             );
         
         // Enviar mensagem no ticket
+        const mentionSupport = supportRole ? ` | ${supportRole}` : '';
         await ticketChannel.send({
-            content: `${user} | <@&${supportRoleId}>`,
+            content: `${user}${mentionSupport}`,
             embeds: [ticketEmbed],
             components: [row]
         });
