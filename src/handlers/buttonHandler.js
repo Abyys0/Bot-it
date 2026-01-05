@@ -26,10 +26,7 @@ const matchManager = require('../utils/matchManager');
 const { atualizarEmbedFila, MODOS } = require('../utils/panelTemplates');
 
 // Armazenar seleções temporárias dos jogadores (compartilhado com selectHandler)
-const playerSelections = new Map();
-
-// Exportar playerSelections para ser usado pelo selectHandler
-module.exports.playerSelections = playerSelections;
+const playerSelections = require('../utils/playerSelections');
 
 module.exports = {
     async execute(interaction) {

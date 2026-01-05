@@ -11,23 +11,12 @@ const { getServerConfig } = require('../utils/permissions');
 const queueManager = require('../utils/queueManager');
 const matchManager = require('../utils/matchManager');
 
-// Armazenamento compartilhado de seleções (será sobrescrito pela importação do buttonHandler)
-let playerSelections = new Map();
+// Armazenamento compartilhado de seleções
+const playerSelections = require('../utils/playerSelections');
 
 module.exports = {
     async execute(interaction) {
         const customId = interaction.customId;
-        
-        // Obter playerSelections do buttonHandler na primeira execução
-        if (!module.exports.playerSelectionsInitialized) {
-            try {
-                const buttonHandler = require('./buttonHandler');
-                playerSelections = buttonHandler.playerSelections;
-                module.exports.playerSelectionsInitialized = true;
-            } catch (e) {
-                console.error('Erro ao importar playerSelections:', e);
-            }
-        }
         
         // Menu de tickets
         if (customId === 'ticket_menu') {
