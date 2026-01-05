@@ -69,21 +69,8 @@ module.exports = {
             const { createQueuePanel } = require('../utils/panelTemplates');
             const salas = loadSalas();
             
-            // Criar categoria para as salas se não existir
-            let categoria = interaction.guild.channels.cache.find(
-                c => c.type === ChannelType.GuildCategory && c.name === `🎮 ${modoInfo.nome.toUpperCase()}`
-            );
-            
-            if (!categoria) {
-                categoria = await interaction.guild.channels.create({
-                    name: `🎮 ${modoInfo.nome.toUpperCase()}`,
-                    type: ChannelType.GuildCategory,
-                    position: 0
-                });
-            }
-            
-            // Mover o canal para a categoria
-            await canal.setParent(categoria.id);
+            // Usar a categoria atual do canal (se houver) para criar partidas depois
+            const categoriaId = canal.parentId;
             
             // Enviar painéis para cada valor
             for (const valor of VALORES) {
@@ -103,6 +90,13 @@ module.exports = {
                     channelId: canal.id,
                     guildId: interaction.guild.id,
                     cargoSuporteId: cargoSuporte.id,
+                    categoriaId: categoriaId // Usar a categoria do canal atual
+                };
+                    valor: valor,
+                    messageId: message.id,
+                    channelId: canal.id,
+                    guildId: interaction.guild.id,
+                    cargoSuporteId: cargoSuporte.id,
                     categoriaId: categoria.id
                 };
                 
@@ -115,11 +109,15 @@ module.exports = {
             
             saveSalas(salas);
             
+            const categoriaInfo = categoriaId 
+                ? `📁 Partidas serão criadas na categoria atual` 
+                : `⚠️ Canal sem categoria - partidas serão criadas sem categoria`;
+            
             await interaction.editReply({
                 content: `✅ Painéis de **${modoInfo.nome}** criados com sucesso em ${canal}!\n` +
                         `📊 Total de painéis criados: ${VALORES.length}\n` +
                         `🛡️ Cargo de suporte: ${cargoSuporte}\n` +
-                        `📁 Categoria: ${categoria}`
+                        `${categoriaInfo}`
             });
             
         } catch (error) {
