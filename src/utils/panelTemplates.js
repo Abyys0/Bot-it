@@ -22,7 +22,7 @@ function createQueuePanel(modo, valor, modoInfo) {
             `**╠═══════ FILA ═══════╣**\n` +
             `*Nenhum jogador na fila*\n\n` +
             `**╚═══════════════════════╝**\n\n` +
-            `⚠️ *Escolha suas opções e entre na fila!*`
+            (modo === '1x1' ? '⚠️ *Escolha o tipo de gelo e entre na fila!*' : '⚠️ *Escolha sua arma e entre na fila!*')
         )
         .setThumbnail('https://cdn.discordapp.com/attachments/1433927359018434800/1457591098854605002/Gemini_Generated_Image_np3l62np3l62np3l.png')
         .setFooter({ text: 'Sistema de Filas • Bot-it' })
@@ -31,7 +31,7 @@ function createQueuePanel(modo, valor, modoInfo) {
     const components = [];
     const painelId = `${modo}_${valor.replace('.', '')}`;
     
-    // Para modo 1x1, adicionar opção de gelo
+    // Para modo 1x1, apenas seleção de gelo
     if (modo === '1x1') {
         const rowGelo = new ActionRowBuilder()
             .addComponents(
@@ -54,44 +54,35 @@ function createQueuePanel(modo, valor, modoInfo) {
                     ])
             );
         components.push(rowGelo);
+        
+        // Botões de entrar/sair para 1x1
+        const rowBotoes = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`entrar_fila_${painelId}`)
+                    .setLabel('✅ ENTRAR NA FILA')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId(`sair_fila_${painelId}`)
+                    .setLabel('❌ SAIR DA FILA')
+                    .setStyle(ButtonStyle.Danger)
+            );
+        components.push(rowBotoes);
+    } else {
+        // Para outros modos (2x2, 3x3, 4x4): Botões diretos com arma
+        const rowBotoesArma = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`entrar_xm8_${painelId}`)
+                    .setLabel('🔫 FULL XM8 & UMP')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId(`sair_fila_${painelId}`)
+                    .setLabel('❌ SAIR DA FILA')
+                    .setStyle(ButtonStyle.Danger)
+            );
+        components.push(rowBotoesArma);
     }
-    
-    // Menu de seleção de arma
-    const rowArma = new ActionRowBuilder()
-        .addComponents(
-            new StringSelectMenuBuilder()
-                .setCustomId(`arma_${painelId}`)
-                .setPlaceholder('🔫 Escolha sua arma')
-                .addOptions([
-                    {
-                        label: 'Full XM8',
-                        description: 'Arma XM8 completa',
-                        value: 'Full XM8',
-                        emoji: '🔫'
-                    },
-                    {
-                        label: 'UMP',
-                        description: 'Submetralhadora UMP',
-                        value: 'UMP',
-                        emoji: '🔫'
-                    }
-                ])
-        );
-    components.push(rowArma);
-    
-    // Botões de ação
-    const rowBotoes = new ActionRowBuilder()
-        .addComponents(
-            new ButtonBuilder()
-                .setCustomId(`entrar_fila_${painelId}`)
-                .setLabel('✅ ENTRAR NA FILA')
-                .setStyle(ButtonStyle.Success),
-            new ButtonBuilder()
-                .setCustomId(`sair_fila_${painelId}`)
-                .setLabel('❌ SAIR DA FILA')
-                .setStyle(ButtonStyle.Danger)
-        );
-    components.push(rowBotoes);
     
     return { embed, components };
 }
@@ -102,9 +93,11 @@ function createQueuePanel(modo, valor, modoInfo) {
 function atualizarEmbedFila(modo, valor, jogadores, modoInfo) {
     const filaTexto = jogadores.length > 0 
         ? jogadores.map((j, i) => {
-            let opcoes = `🔫 ${j.opcoes.arma}`;
+            let opcoes = '';
             if (modo === '1x1') {
-                opcoes += ` • 🧊 ${j.opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
+                opcoes = `🧊 ${j.opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
+            } else {
+                opcoes = `🔫 Full XM8 & UMP`;
             }
             return `**${i + 1}.** <@${j.userId}>\n   └ ${opcoes}`;
         }).join('\n\n')
@@ -123,7 +116,7 @@ function atualizarEmbedFila(modo, valor, jogadores, modoInfo) {
             `**╚═══════════════════════╝**\n\n` +
             (jogadores.length >= modoInfo.jogadores 
                 ? '🎮 *Iniciando partida...*' 
-                : '⚠️ *Escolha suas opções e entre na fila!*')
+                : modo === '1x1' ? '⚠️ *Escolha o tipo de gelo e entre na fila!*' : '⚠️ *Escolha sua arma e entre na fila!*')
         )
         .setThumbnail('https://cdn.discordapp.com/attachments/1433927359018434800/1457591098854605002/Gemini_Generated_Image_np3l62np3l62np3l.png')
         .setFooter({ text: 'Sistema de Filas • Bot-it' })

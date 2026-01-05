@@ -114,9 +114,9 @@ async function enviarPainelPartida(canal, partidaId) {
                 
                 if (partida.modo === '1x1') {
                     opcoesTexto = `\n   └ 🧊 ${opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
+                } else {
+                    opcoesTexto = `\n   └ 🔫 Full XM8 & UMP`;
                 }
-                
-                opcoesTexto += `\n   └ 🔫 ${opcoes.arma}`;
                 
                 return `**${i + 1}.** <@${j.userId}> ${j.pronto ? '✅' : '⏳'}${opcoesTexto}`;
             }).join('\n\n') +
@@ -197,9 +197,9 @@ async function atualizarPainelPartida(client, partidaId) {
                 
                 if (partida.modo === '1x1') {
                     opcoesTexto = `\n   └ 🧊 ${opcoes.gelo === 'infinito' ? 'Gelo Infinito' : 'Gelo Normal'}`;
+                } else {
+                    opcoesTexto = `\n   └ 🔫 Full XM8 & UMP`;
                 }
-                
-                opcoesTexto += `\n   └ 🔫 ${opcoes.arma}`;
                 
                 const vencedor = partida.vencedorId === j.userId ? ' 🏆' : '';
                 

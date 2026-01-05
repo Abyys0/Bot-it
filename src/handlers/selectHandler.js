@@ -47,11 +47,6 @@ module.exports = {
             await handleSelecaoGelo(interaction);
         }
         
-        // Seleção de arma
-        if (customId.startsWith('arma_')) {
-            await handleSelecaoArma(interaction);
-        }
-        
         // Seleção de vencedor
         if (customId.startsWith('selecionar_vencedor_')) {
             await handleSelecaoVencedor(interaction);
@@ -238,27 +233,6 @@ async function handleSelecaoGelo(interaction) {
     
     await interaction.reply({
         content: `✅ Você selecionou: **${geloTexto}**`,
-        ephemeral: true
-    });
-}
-
-/**
- * Handler para seleção de arma
- */
-async function handleSelecaoArma(interaction) {
-    const painelId = interaction.customId.replace('arma_', '');
-    const userId = interaction.user.id;
-    const arma = interaction.values[0]; // 'Full XM8' ou 'UMP'
-    
-    // Obter ou criar seleção do jogador
-    const key = `${userId}_${painelId}`;
-    let selecao = playerSelections.get(key) || {};
-    
-    selecao.arma = arma;
-    playerSelections.set(key, selecao);
-    
-    await interaction.reply({
-        content: `✅ Você selecionou a arma: **🔫 ${arma}**`,
         ephemeral: true
     });
 }

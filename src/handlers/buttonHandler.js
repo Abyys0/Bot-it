@@ -37,9 +37,15 @@ module.exports = {
         
         // === HANDLERS DE SALAS DE JOGO ===
         
-        // Entrar na fila
+        // Entrar na fila (1x1)
         if (customId.startsWith('entrar_fila_')) {
             await handleEntrarFila(interaction);
+            return;
+        }
+        
+        // Entrar na fila com Full XM8 & UMP (outros modos)
+        if (customId.startsWith('entrar_xm8_')) {
+            await handleEntrarFilaXM8(interaction);
             return;
         }
         
@@ -568,35 +574,50 @@ async function closeTicket(interaction) {
 // ========== HANDLERS DE SALAS DE JOGO ==========
 
 /**
- * Handler para entrar na fila
+ * Handler para entrar na fila (modo 1x1)
  */
 async function handleEntrarFila(interaction) {
     const painelId = interaction.customId.replace('entrar_fila_', '');
     const userId = interaction.user.id;
     
-    // Verificar se o jogador já selecionou as opções
+    // Verificar se o jogador selecionou o gelo (apenas para 1x1)
     const selecao = playerSelections.get(`${userId}_${painelId}`);
     
-    if (!selecao || !selecao.arma) {
-        return interaction.reply({
-            content: '⚠️ Selecione uma **arma** antes de entrar na fila!',
-            ephemeral: true
-        });
-    }
-    
-    const salas = queueManager.loadSalas();
-    const painel = salas.paineis[painelId];
-    
-    // Para modo 1x1, verificar se selecionou o gelo
-    if (painel.modo === '1x1' && !selecao.gelo) {
+    if (!selecao || !selecao.gelo) {
         return interaction.reply({
             content: '⚠️ Selecione o **tipo de gelo** antes de entrar na fila!',
             ephemeral: true
         });
     }
     
-    // Adicionar à fila
-    const resultado = queueManager.adicionarJogadorFila(painelId, userId, selecao);
+    // Adicionar à fila com opção de gelo
+    const opcoes = {
+        gelo: selecao.gelo
+    };
+    
+    await processarEntradaFila(interaction, painelId, userId, opcoes);
+}
+
+/**
+ * Handler para entrar na fila com Full XM8 & UMP (outros modos)
+ */
+async function handleEntrarFilaXM8(interaction) {
+    const painelId = interaction.customId.replace('entrar_xm8_', '');
+    const userId = interaction.user.id;
+    
+    // Para outros modos, arma é sempre Full XM8 & UMP
+    const opcoes = {
+        arma: 'Full XM8 & UMP'
+    };
+    
+    await processarEntradaFila(interaction, painelId, userId, opcoes);
+}
+
+/**
+ * Processa a entrada de um jogador na fila
+ */
+async function processarEntradaFila(interaction, painelId, userId, opcoes) {
+    const resultado = queueManager.adicionarJogadorFila(painelId, userId, opcoes);
     
     if (!resultado.success) {
         return interaction.reply({
@@ -606,6 +627,8 @@ async function handleEntrarFila(interaction) {
     }
     
     // Atualizar painel da fila
+    const salas = queueManager.loadSalas();
+    const painel = salas.paineis[painelId];
     const modoInfo = MODOS[painel.modo];
     const embedAtualizado = atualizarEmbedFila(painel.modo, painel.valor, resultado.fila, modoInfo);
     
